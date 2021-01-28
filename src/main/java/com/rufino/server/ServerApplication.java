@@ -1,6 +1,6 @@
 package com.rufino.server;
 
-import com.rufino.server.services.FilesStorageService;
+import com.rufino.server.services.FileStorageService;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -15,7 +15,7 @@ public class ServerApplication {
 	}
 
 	@Bean
-	CommandLineRunner init(FilesStorageService storageService) {
+	CommandLineRunner init(FileStorageService storageService) {
 		return (args) -> {
 			storageService.deleteAll();
 			storageService.init();

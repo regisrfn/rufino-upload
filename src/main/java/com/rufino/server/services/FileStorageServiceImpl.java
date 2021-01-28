@@ -12,7 +12,7 @@ import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
-public class FilesStorageServiceImpl implements FilesStorageService {
+public class FileStorageServiceImpl implements FileStorageService {
 
     private final Path root = Paths.get("uploads");
 
@@ -26,9 +26,11 @@ public class FilesStorageServiceImpl implements FilesStorageService {
     }
 
     @Override
-    public void save(MultipartFile file) {
+    public String save(MultipartFile file) {
         try {
-            Files.copy(file.getInputStream(), this.root.resolve(file.getOriginalFilename()));
+            Path filePath = this.root.resolve(file.getOriginalFilename());
+            Files.copy(file.getInputStream(), filePath);
+            return filePath.toString();
         } catch (Exception e) {
             throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
         }
