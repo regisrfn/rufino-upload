@@ -7,7 +7,7 @@ public class ApiRequestException extends RuntimeException {
      *
      */
     private static final long serialVersionUID = 1L;
-    private HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+    private HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
     
 
     public ApiRequestException(String message) {
