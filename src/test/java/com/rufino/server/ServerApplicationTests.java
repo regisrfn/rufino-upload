@@ -2,7 +2,7 @@ package com.rufino.server;
 
 import java.io.File;
 
-import com.rufino.server.services.AwsServices;
+import com.rufino.server.services.ApiServices;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +12,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 class ServerApplicationTests {
 
 	@Autowired
-	AwsServices aws;
+	ApiServices apiServices;
 
 	@Test
 	void itShouldUpdateAFile() {
 
 		File img = new File("tmp/fox-test.jpg");
-		aws.uploadFileToS3("images/" + img.getName(), img);
+		apiServices.uploadFile("images/" + img.getName(), img);
 
 	}
 
