@@ -17,16 +17,10 @@ public class ApiServices {
     private AwsServices aws;
     FileStorageService storageService;
 
-    private String awsUrl;
-    private String awsBucket, awsRegion, awsFolder;
-
     @Autowired
     public ApiServices(AwsServices aws, FileStorageService storageService) {
         this.aws = aws;
         this.storageService = storageService;
-        this.awsBucket = aws.getAwsBucket();
-        this.awsRegion = aws.getAwsRegion();
-        this.awsFolder = "images/";
     }
 
     public FileCloud uploadFile(MultipartFile file) {
@@ -38,23 +32,22 @@ public class ApiServices {
         filename = fileUploaded.getId() + "." + extFile;
 
         try {
-
             savedFile = storageService.save(file);
-            aws.uploadFileToS3(awsFolder + filename, new File(savedFile));
-
-            awsUrl = String.format("https://%s.s3-%s.amazonaws.com/images/%s", awsBucket, awsRegion, filename);
-
-            fileUploaded.setUrl(awsUrl);
-            fileUploaded.setName(filename);
-            fileUploaded.setSize(file.getSize());
-            fileUploaded.setContentType(file.getContentType());
-
+            aws.uploadFileToS3(filename, new File(savedFile));
+            setFileCloud(file, filename, fileUploaded);
             return fileUploaded;
 
         } catch (Exception e) {
             e.printStackTrace();
             throw new ApiRequestException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private void setFileCloud(MultipartFile file, String filename, FileCloud fileUploaded) {
+        fileUploaded.setUrl(this.aws.getAwsUrl() + filename);
+        fileUploaded.setName(filename);
+        fileUploaded.setSize(file.getSize());
+        fileUploaded.setContentType(file.getContentType());
     }
 
     private String getExtension(String filename) {

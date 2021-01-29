@@ -17,7 +17,7 @@ public class AwsServices {
     @Autowired
     private AmazonS3 amazonS3;
 
-    private String awsBucket, awsRegion;
+    private String awsBucket, awsRegion, awsFolder;
 
     private Dotenv dotenv;
 
@@ -25,11 +25,12 @@ public class AwsServices {
         dotenv = Dotenv.configure().ignoreIfMissing().load();
         awsBucket = dotenv.get("AWS_BUCKET");
         awsRegion = dotenv.get("AWS_REGION");
+        awsFolder = dotenv.get("AWS_FOLDER");
     }
 
     public void uploadFileToS3(String filename, File file) {
-        amazonS3.putObject(
-                new PutObjectRequest(awsBucket, filename, file).withCannedAcl(CannedAccessControlList.PublicRead));
+        amazonS3.putObject(new PutObjectRequest(awsBucket, awsFolder + filename, file)
+                .withCannedAcl(CannedAccessControlList.PublicRead));
     }
 
     public String getAwsBucket() {
@@ -46,5 +47,17 @@ public class AwsServices {
 
     public void setAwsRegion(String awsRegion) {
         this.awsRegion = awsRegion;
+    }
+
+    public String getAwsFolder() {
+        return awsFolder;
+    }
+
+    public void setAwsFolder(String awsFolder) {
+        this.awsFolder = awsFolder;
+    }
+
+    public String getAwsUrl() {
+        return String.format("https://%s.s3-%s.amazonaws.com/%s/", awsBucket, awsRegion, awsFolder);
     }
 }
