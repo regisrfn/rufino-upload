@@ -58,6 +58,6 @@ public class AwsServices {
     }
 
     public String getAwsUrl() {
-        return String.format("https://%s.s3-%s.amazonaws.com/%s/", awsBucket, awsRegion, awsFolder);
+        return String.format("https://%s.s3-%s.amazonaws.com/%s", awsBucket, awsRegion, awsFolder);
     }
 }
