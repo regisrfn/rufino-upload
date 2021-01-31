@@ -1,10 +1,18 @@
 package com.rufino.server.model;
 
+import javax.validation.constraints.NotBlank;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+@JsonInclude(Include.NON_NULL)
 public class FileBase64 {
 
+    @NotBlank(message = "Value should not be empty")
     private String name;
     private String contentType;
     private Long size;
+    @NotBlank(message = "Value should not be empty")
     private String encodedString;
 
     public String getName() {

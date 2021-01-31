@@ -27,17 +27,17 @@ public class ApiServices {
 
     public FileCloud uploadFile(MultipartFile file) {
 
-        String filename, savedFile, extFile;
+        String filename, savedFilePath, extFile;
         FileCloud fileUploaded = new FileCloud();
 
         extFile = getExtension(file.getOriginalFilename());
         filename = fileUploaded.getId() + "." + extFile;
 
         try {
-            savedFile = storageService.save(file);
-            aws.uploadFileToS3(filename, new File(savedFile));
+            savedFilePath = storageService.save(file);
+            aws.uploadFileToS3(filename, new File(savedFilePath));
             setFileCloud(file, filename, fileUploaded);
-            storageService.delete(savedFile);
+            storageService.delete(savedFilePath);
             return fileUploaded;
 
         } catch (Exception e) {
@@ -48,7 +48,7 @@ public class ApiServices {
 
     public FileCloud uploadFile(FileBase64 file) {
 
-        String filename, savedFile, extFile;
+        String filename, savedFilePath, extFile;
         FileCloud fileUploaded = new FileCloud();
 
         extFile = getExtension(file.getName());
@@ -56,9 +56,9 @@ public class ApiServices {
 
         try {
             Base64ToFile base64ToFile = new Base64ToFile(file.getEncodedString());
-            savedFile = base64ToFile.convert(filename);
-            aws.uploadFileToS3(filename, new File(savedFile));
-            storageService.delete(savedFile);
+            savedFilePath = base64ToFile.convert(filename);
+            aws.uploadFileToS3(filename, new File(savedFilePath));
+            storageService.delete(filename);
             setFileCloud(file, filename, fileUploaded);
             return fileUploaded;
 
