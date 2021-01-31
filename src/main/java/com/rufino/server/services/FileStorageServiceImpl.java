@@ -41,4 +41,18 @@ public class FileStorageServiceImpl implements FileStorageService {
         FileSystemUtils.deleteRecursively(root.toFile());
     }
 
+    @Override
+    public boolean delete(String filename) {
+        Path filePath = this.root.resolve(filename);
+        try {
+            Files.deleteIfExists(filePath);
+            return true;
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return false;
+        }
+       
+    }
+
 }

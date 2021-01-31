@@ -9,4 +9,6 @@ public interface FileStorageService {
 
   public void deleteAll();
 
+  public boolean delete(String filename);
+
 }
