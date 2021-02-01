@@ -2,9 +2,7 @@ package com.rufino.server.services;
 
 import java.io.File;
 
-import com.rufino.server.converter.Base64ToFile;
 import com.rufino.server.exception.ApiRequestException;
-import com.rufino.server.model.FileBase64;
 import com.rufino.server.model.FileCloud;
 
 import org.apache.commons.io.FilenameUtils;
@@ -37,7 +35,7 @@ public class ApiServices {
             savedFilePath = storageService.save(file);
             aws.uploadFileToS3(filename, new File(savedFilePath));
             setFileCloud(file, filename, fileUploaded);
-            storageService.delete(savedFilePath);
+            storageService.delete(file.getOriginalFilename());
             return fileUploaded;
 
         } catch (Exception e) {
@@ -45,37 +43,9 @@ public class ApiServices {
             throw new ApiRequestException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    public FileCloud uploadFile(FileBase64 file) {
-
-        String filename, savedFilePath, extFile;
-        FileCloud fileUploaded = new FileCloud();
-
-        extFile = getExtension(file.getName());
-        filename = fileUploaded.getId() + "." + extFile;
-
-        try {
-            Base64ToFile base64ToFile = new Base64ToFile(file.getEncodedString());
-            savedFilePath = base64ToFile.convert(filename);
-            aws.uploadFileToS3(filename, new File(savedFilePath));
-            storageService.delete(filename);
-            setFileCloud(file, filename, fileUploaded);
-            return fileUploaded;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new ApiRequestException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+   
 
     private void setFileCloud(MultipartFile file, String filename, FileCloud fileUploaded) {
-        fileUploaded.setUrl(this.aws.getAwsUrl() + filename);
-        fileUploaded.setName(filename);
-        fileUploaded.setSize(file.getSize());
-        fileUploaded.setContentType(file.getContentType());
-    }
-
-    private void setFileCloud(FileBase64 file, String filename, FileCloud fileUploaded) {
         fileUploaded.setUrl(this.aws.getAwsUrl() + filename);
         fileUploaded.setName(filename);
         fileUploaded.setSize(file.getSize());
