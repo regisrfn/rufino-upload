@@ -32,10 +32,10 @@ public class ApiServices {
         filename = fileUploaded.getId() + "." + extFile;
 
         try {
-            savedFilePath = storageService.save(file);
+            savedFilePath = storageService.save(file,filename);
             aws.uploadFileToS3(filename, new File(savedFilePath));
             setFileCloud(file, filename, fileUploaded);
-            storageService.delete(file.getOriginalFilename());
+            storageService.delete(filename);
             return fileUploaded;
 
         } catch (Exception e) {

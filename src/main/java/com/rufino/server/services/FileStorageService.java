@@ -7,6 +7,9 @@ public interface FileStorageService {
 
   public String save(MultipartFile file);
 
+  public String save(MultipartFile file, String filename);
+
+
   public void deleteAll();
 
   public boolean delete(String filename);
