@@ -1,7 +1,5 @@
 package com.rufino.server.services;
 
-import java.io.File;
-
 import com.rufino.server.exception.ApiRequestException;
 import com.rufino.server.model.FileCloud;
 
@@ -25,17 +23,15 @@ public class ApiServices {
 
     public FileCloud uploadFile(MultipartFile file) {
 
-        String filename, savedFilePath, extFile;
+        String filename, extFile;
         FileCloud fileUploaded = new FileCloud();
 
         extFile = getExtension(file.getOriginalFilename());
         filename = fileUploaded.getId() + "." + extFile;
 
         try {
-            savedFilePath = storageService.save(file, filename);
-            aws.uploadFileToS3(filename, new File(savedFilePath));
+            aws.uploadFileToS3(filename, file);
             setFileCloud(file, filename, fileUploaded);
-            storageService.delete(filename);
 
         } catch (Exception e) {
             e.printStackTrace();

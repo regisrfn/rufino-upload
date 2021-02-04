@@ -1,14 +1,17 @@
 package com.rufino.server.services;
 
 import java.io.File;
+import java.io.IOException;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
@@ -59,6 +62,15 @@ public class AwsServices {
 
     public void uploadFileToS3(String filename, File file) {
         amazonS3.putObject(new PutObjectRequest(awsBucket, awsFolder + filename, file)
+                .withCannedAcl(CannedAccessControlList.PublicRead));
+    }
+
+    public void uploadFileToS3(String filename, MultipartFile file) throws IOException {
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentType(file.getContentType());
+        metadata.setContentLength(file.getSize());
+
+        amazonS3.putObject(new PutObjectRequest(awsBucket, awsFolder + filename, file.getInputStream(),metadata)
                 .withCannedAcl(CannedAccessControlList.PublicRead));
     }
 
