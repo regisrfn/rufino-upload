@@ -32,18 +32,27 @@ public class ApiServices {
         filename = fileUploaded.getId() + "." + extFile;
 
         try {
-            savedFilePath = storageService.save(file,filename);
+            savedFilePath = storageService.save(file, filename);
             aws.uploadFileToS3(filename, new File(savedFilePath));
             setFileCloud(file, filename, fileUploaded);
             storageService.delete(filename);
-            return fileUploaded;
 
         } catch (Exception e) {
             e.printStackTrace();
             throw new ApiRequestException(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        return fileUploaded;
+
     }
-   
+
+    public boolean deleteFile(String filename) {
+        try {
+            return aws.deleteFile(filename);
+        } catch (Exception e) {
+            throw new ApiRequestException("Could not delete file.", HttpStatus.NOT_FOUND);
+        }
+
+    }
 
     private void setFileCloud(MultipartFile file, String filename, FileCloud fileUploaded) {
         fileUploaded.setUrl(this.aws.getAwsUrl() + filename);

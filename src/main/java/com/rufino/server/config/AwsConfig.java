@@ -1,5 +1,6 @@
 package com.rufino.server.config;
 
+import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
@@ -28,8 +29,11 @@ public class AwsConfig {
 
     @Bean
     public AmazonS3 setUpClient() {
+        ClientConfiguration clientConfig = new ClientConfiguration();
+        clientConfig.setRequestTimeout(-1);
         return AmazonS3ClientBuilder.standard().withRegion(clientRegion)
-                .withCredentials(new AWSStaticCredentialsProvider(credentials)).build();
+                .withCredentials(new AWSStaticCredentialsProvider(credentials)).withClientConfiguration(clientConfig)
+                .build();
     }
 
 }
