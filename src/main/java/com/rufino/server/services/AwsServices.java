@@ -1,6 +1,5 @@
 package com.rufino.server.services;
 
-import java.io.File;
 import java.io.IOException;
 
 import com.amazonaws.AmazonServiceException;
@@ -8,6 +7,8 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,8 +23,8 @@ public class AwsServices {
     private AmazonS3 amazonS3;
 
     private String awsBucket, awsRegion, awsFolder;
-
     private Dotenv dotenv;
+    TransferManager tm;
 
     public AwsServices() {
         dotenv = Dotenv.configure().ignoreIfMissing().load();
@@ -60,18 +61,19 @@ public class AwsServices {
         return String.format("https://%s.s3-%s.amazonaws.com/%s", awsBucket, awsRegion, awsFolder);
     }
 
-    public void uploadFileToS3(String filename, File file) {
-        amazonS3.putObject(new PutObjectRequest(awsBucket, awsFolder + filename, file)
-                .withCannedAcl(CannedAccessControlList.PublicRead));
-    }
-
     public void uploadFileToS3(String filename, MultipartFile file) throws IOException {
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentType(file.getContentType());
         metadata.setContentLength(file.getSize());
 
-        amazonS3.putObject(new PutObjectRequest(awsBucket, awsFolder + filename, file.getInputStream(),metadata)
-                .withCannedAcl(CannedAccessControlList.PublicRead));
+        if (file.getSize() < 100 * 1000000) {
+            amazonS3.putObject(new PutObjectRequest(awsBucket, awsFolder + filename, file.getInputStream(), metadata)
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
+        } else {
+            tm = TransferManagerBuilder.standard().withS3Client(amazonS3).build();
+            tm.upload(awsBucket, awsFolder + filename, file.getInputStream(), metadata);
+        }
+
     }
 
     public boolean deleteFile(String filename) {
