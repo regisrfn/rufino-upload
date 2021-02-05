@@ -24,7 +24,7 @@ public class AwsServices {
 
     private String awsBucket, awsRegion, awsFolder;
     private Dotenv dotenv;
-    TransferManager tm;
+    private TransferManager tm;
 
     public AwsServices() {
         dotenv = Dotenv.configure().ignoreIfMissing().load();
@@ -71,7 +71,9 @@ public class AwsServices {
                     .withCannedAcl(CannedAccessControlList.PublicRead));
         } else {
             tm = TransferManagerBuilder.standard().withS3Client(amazonS3).build();
-            tm.upload(awsBucket, awsFolder + filename, file.getInputStream(), metadata);
+            PutObjectRequest request = new PutObjectRequest(awsBucket, awsFolder + filename, file.getInputStream(),
+                    metadata);
+            tm.upload(request.withCannedAcl(CannedAccessControlList.PublicRead));
         }
 
     }
