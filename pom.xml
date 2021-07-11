@@ -13,7 +13,7 @@
 	<name>server</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
-		<java.version>11</java.version>
+		<java.version>16</java.version>
 	</properties>
 
 	<dependencies>
@@ -63,6 +63,26 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>com.google.cloud.tools</groupId>
+				<artifactId>jib-maven-plugin</artifactId>
+				<version>3.1.2</version>
+				<configuration>
+					<from>
+						<image>openjdk:16</image>
+					</from>
+					<to>
+						<image>regisrufino/upload-api-aws:latest</image>
+					</to>
+					<container>
+						<ports>
+							<port>5000</port>
+						</ports>
+						<format>OCI</format>
+						<creationTime>USE_CURRENT_TIMESTAMP</creationTime>
+					</container>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
